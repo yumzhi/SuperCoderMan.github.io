@@ -8,6 +8,8 @@ tag: [Heros, Legends]
 ---
 Heroes come and go, but legends are forever.球迷的心里，永远没有谢幕。![img](http://qzonestyle.gtimg.cn/qzone/em/e166.png)
 
-> Brunch hella poutine authentic farm-to-table. Stumptown craft beer lomo, heirloom single-origin coffee synth PBR&B post-ironic. <cite>- Lorem Ipsum</cite>
+{% imager heroandlegend.jpg|right %}
 
-Heroes come and go, but legends are forever.球迷的心里，永远没有谢幕。![img](http://qzonestyle.gtimg.cn/qzone/em/e166.png)
+![new-york](E:\GuohuaProject\Projects\SuperCoderMan.github.io\assets\img\new-york.jpg)
+
+Heroes come and go, but legends are forever.球迷的心里，永远没有谢幕。
