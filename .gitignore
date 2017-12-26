@@ -30,3 +30,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Pre_post Directories
+/_pre_posts/*
