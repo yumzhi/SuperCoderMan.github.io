@@ -1,6 +1,6 @@
 ---
 layout: post
-title: [warning] iteration 5u invokes undefined behavior
+title: warning iteration 5u invokes undefined behavior
 date: 2018-01-05 10:12:39 +0300
 description: You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. # Add post description (optional)
 img: C.jpg # Add image post (optional)
