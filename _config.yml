@@ -1,41 +1,28 @@
-title: Hi, I'm Kevin Taylor, welcome to my blog.
-description: > # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
-permalink: ':title/'
-baseurl: "/SuperCoderMan.github.io" # the subpath of your site, e.g. /blog
-url: "http://SuperCoderMan.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-site-twitter: #if your site has a twitter account, enter it here
+name: 羽墨的博客
+author: 182o.com
+#baseurl: /182o.com
+keywords: C,C++,Python,Java,github,git,jekyll,羽墨
+description: 一个小白码农的日常
+github: https://github.com/supercoderman
+email: 286273384@qq.com
 
-# Author Settings
-author: Kevin Taylor # add your name
-author-img: Kevin-Taylor.jpg # add your photo
-about-author: Our greatest glory is not in never falling, but in rising every time we fall. Always hungry to keep learning, keep going. # add description
-email: 286273384@qq.com # your email
-phone: 156****7748 # your pnone number
-website: http://www.182o.com # you website
 
-# Social link
-twitter:    # add your Twitter handle
-facebook:   # add your Facebook handle
-github:     # add your Github handle
-linkedin:   # add your Linkedin handle
-
-# Disqus
-discus-identifier: mr-brown # add your discus identifier
-
-# Tracker
-analytics: # Google Analytics
-
-# Build Settings
+encoding: utf-8
+#highlighter: rouge
 markdown: kramdown
-plugins_dir:
-  - jekyll-sitemap
-  - jekyll-paginate
-  - jemoji
+redcarpet:
+  extensions: ["tables"]
 
-paginate: 8
-paginate_path: "/page/:num"
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
 
-exclude: ["node_modules", "gulpfile.js", "package.json", "yarn.lock"]
+port : 5000

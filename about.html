@@ -1,0 +1,112 @@
+---
+title: 我的主页
+---
+<link href="{{ site.baseurl }}/css/tabswitch.css" rel="stylesheet">
+<div id="article" aos="zoom-in">
+   <div class="w1200">
+     <h1 align="center"><span>我的</span>主页</h1> 
+     <ul class="important cl"> 
+     <li class="rcsp_1"> <a><span></span></a> <p>本站简介</p> <strong><i></i></strong> </li> 
+     <li class="rcsp_2"> <a><span></span></a> <p>个人信息</p> <strong style="display:none"><i></i></strong> </li> 
+     <li class="rcsp_3"> <a><span></span></a> <p>学习生涯</p> <strong style="display:none"><i></i></strong> </li> 
+     <li class="rcsp_4"> <a><span></span></a> <p>工作履历</p> <strong style="display:none"><i></i></strong> </li> 
+     <li class="rcsp_5"> <a><span></span></a> <p>兴趣爱好</p> <strong style="display:none"><i></i></strong> </li> 
+     <li class="rcsp_6"> <a><span></span></a> <p>友情链接</p> <strong style="display:none"><i></i></strong> </li> 
+    </ul> 
+    <div class="contents"> 
+     <div class="cl" style="display: block;"> 
+      <div class="important_r"> 
+       <div class="study"> 
+        <h4>本站简介</h4> 
+        <span>个人博客，基于github pages + jekyll搭建，欢迎吐槽留言~</span>
+		<h4>特别鸣谢</h4> 
+		<span>本博客基于<a class="a-site" href="http://liangzai.pub/" target="_blank">良仔的博客</a>修改而来~</span>
+		<img class="pic-gif" src="{{ site.baseurl }}/images/liuyan.gif"/>
+       </div> 
+      </div> 
+     </div> 
+     <div class="cl" style="display: none;"> 
+      <div class="important_r"> 
+       <div class="study"> 
+        <h4>个人信息</h4> 
+        <span>本人男，坐标深圳，目前是小白程序员一枚，从事嵌入式开发工作。</span>
+		<img class="pic-gif" src="{{ site.baseurl }}/images/wa.gif"/>
+       </div> 
+      </div> 
+     </div> 
+     <div class="cl" style="display: none"> 
+      <div class="important_r"> 
+       <div class="study"> 
+        <h4>华南师范大学</h4> 
+        <span>硕士毕业于华南师范大学华南先进光电子研究院光学工程专业(2015-2017)</span>
+		<h4>湖北汽车工业学院</h4> 
+        <span>本科毕业于湖北汽车工业学院理学院光信息科学与技术专业(2011~2015)</span>
+		<!--
+        <span><a href="https://720yun.com/t/af2z671v86s?pano_id=97130" title="山东科技大学航拍" target="_blank" class="a-skd">欣赏下山科大航拍</a></span>
+		<div class="baguetteBoxThree gallery">
+			<a href="{{ site.baseurl }}/images/school.jpg"><img alt="山科大平面图" title="点击查看大图" src="{{ site.baseurl }}/images/school_lim.jpg"/></a>
+		</div>
+		-->
+       </div> 
+      </div> 
+     </div> 
+     <div class="cl" style="display: none"> 
+      <div class="important_r"> 
+       <div class="study"> 
+        <h4>工作履历</h4> 
+        <span>暂时不更新工作履历...</span>
+		<img class="pic-gif" src="{{ site.baseurl }}/images/strd.gif"/>
+       </div> 
+      </div> 
+     </div> 
+     <div class="cl" style="display: none"> 
+      <div class="important_r"> 
+       <div class="study"> 
+        <h4>兴趣爱好</h4> 
+        <span>有时间会打打羽毛球、乒乓球 ... </span> 
+		<img class="pic-gif" src="{{ site.baseurl }}/images/rlsz.gif"/>
+       </div> 
+      </div> 
+     </div> 
+     <div class="cl" style="display: none"> 
+      <div class="important_r"> 
+       <div class="study"> 
+        <h4>友情链接</h4> 
+		<!--
+        <span><a class="a-site" href="{{ site.baseurl }}/htmlhub/flashsite/index.html" target="_blank">flash小网站，曾经练手用</a></span>
+        <span><a class="a-site" href="{{ site.baseurl }}/bbqner.html" target="_blank">flash小动画，爸爸去哪儿</a></span>
+        <span><a class="a-site" href="http://www.jq22.com/" target="_blank">一个不错jquery插件网站</a></span>
+        <span><a class="a-site" href="http://jekyll.com.cn/" target="_blank">jekyll中文...</a></span>
+        <span><a class="a-site" href="http://jekyllthemes.org/" target="_blank">jekyll模板...</a></span>
+        <span><a class="a-site" href="https://www.zhihu.com/question/20223939" target="_blank">知乎精华帖jekyll模板</a></span>
+		-->
+		<img class="pic-gif" src="{{ site.baseurl }}/images/dagun.gif"/>
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div>
+</div>
+<script type="text/javascript">
+	$(function(){
+		var tabNum=$(".important").find("li");
+		var contentNum=$(".contents").children();
+		var timer;
+		$(tabNum).each(function(index){
+			$(this).hover(function(){
+				var that=$(this);
+				timer=window.setTimeout(function(){
+					$(contentNum).eq(index).css({"display":"block"});
+					$(contentNum).eq(index).siblings().css({"display":"none"});
+					 that.find("a").css({"background":"#FFF","color":"#fff"});
+					 that.find("strong").show();
+					 that.siblings().find("strong").hide();
+					 that.siblings().find("a").css({"background":"#fff","color":"black"});
+				},100);
+			},function(){
+				window.clearTimeout(timer);
+			});
+		});
+	});
+</script> 
