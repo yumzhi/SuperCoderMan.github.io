@@ -1,10 +1,10 @@
 ---
 layout: post
 title: Gizwits中控盒添加子设备
-date: 2018-01-20 21:02:50 +0300
+date: 2018-01-20 10:12:39 +0300
 description: You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. # Add post description (optional)
-img: python.jpg # Add image post (optional)
-tags: [C, Programming, Gizwits]
+img: C.jpg # Add image post (optional)
+tags: [C, ESP8266, Gizwits]
 ---
 >基于gGateway-esp8266\_lib\_DEMO，以添加RGB灯为例。参考文档：中控SDK开发指南_V1.2.0.pdf(gGateway SDK 开发指南 )
 
