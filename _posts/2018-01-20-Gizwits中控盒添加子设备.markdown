@@ -1,0 +1,257 @@
+---
+layout: post
+title: Gizwits中控盒添加子设备
+date: 2018-01-20 21:02:50 +0300
+description: You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. # Add post description (optional)
+img: python.jpg # Add image post (optional)
+tags: [C, Programming, Gizwits]
+---
+>基于gGateway-esp8266\_lib\_DEMO，以添加RGB灯为例。参考文档：中控SDK开发指南_V1.2.0.pdf(gGateway SDK 开发指南 )
+
+1. 在机智云开发者中心添加设备，设置好相应的数据点，如switch、R、G、B四个数据点；详细过程参见机智云官方说明。
+
+2. 调用`gGatewayAddSubDev()`函数添加子设备，文档中`gGatewayAddSubDev()`函数原型为
+
+   ```c
+   /**
+   * gGatewayAddSubDev
+   */
+   int8_t gGatewayAddSubDev(
+     communicationType_t commType, //通信类型 
+     newSubAddWay_t source,        //设备添加方式(SCAN_CODE:指扫码添加; HOC_NETWORK:指自组网)
+     PRO_TYPE protocolType,        //协议类型
+     uint8_t *devAddr,             //设备通信地址(整形数组类型，最长8个字节)
+     const char *productKey,       //productKey(在对应设备基本信息中查看)
+     const char *productSecret,    //productSecret(在对应设备基本信息中查看，需输入开发者账户密码)
+     const char *deviceMac)        //设备mac地址(字符串类型)
+   ```
+
+   【注意】
+
+   (1)`commType`: 可在枚举类型`communicationType_t`中自定义添加：
+
+   ```c
+   //Communication Type Define Statement
+   typedef enum
+   {
+   	demoCI		    =	0x00,
+   	SZ_ZIGBEE		=	0x01,
+   #ifdef __ANDROID__
+       TYPE0,
+   #endif
+       VIRTUAL_MASTER,
+       RGB_LIGHT,       //自定义添加
+   	COMM_MAX		=	0x04,
+                        //此处添加会导致异常，原因未知
+   }communicationType_t;
+   ```
+
+   (2)`protocolType`:协议类型定义见`PRO_TYPE`:
+
+   ```c
+   //协议类型定义
+   typedef enum
+   {
+       STANDARD_TYPE   = 0x00,  //定长
+       VARLEN_TYPE		= 0x01  //变长
+   } PRO_TYPE;
+   ```
+
+   此处的选择应与新建产品时所选协议类型一致，可在设备基本信息中查看协议类型。本文选择的协议类型为定长。
+
+   (3)**在SDK中，`gGatewayAddSubDev()`函数原型已做更改，但内容无变化。**
+
+   ```c
+   /**
+   * gGatewayAddSubDev
+   */
+   int8_t gGatewayAddSubDev(communicationType_t commType,
+                            const subDevJoinGateWay_t *subDevAskJoinGateWay);
+   ```
+
+   相关参数包含在结构体`subDevJoinGateWay_t`中：
+
+   ```c
+   typedef struct
+   {
+       newSubAddWay_t source;
+       PRO_TYPE protocolType;
+       uint8_t *devAddr;
+       char *productKey;
+       char *productSecret;
+       char *deviceMac;
+       uint32_t heartBeatTimeOut;
+   } subDevJoinGateWay_t;
+   ```
+
+   (4)返回值：
+
+   0:子设备添加成功
+
+   -5:当前中控处于非窗口期(默认为180s，机智云官方测试APP点击添加设备后开始)，禁止被添加，说明此时APP尚未调用添加设备的API，故无法添加。
+
+   其他返回值含义见文档。
+
+3. 上报子设备状态
+
+   ```c
+   /*
+   * gGatewaySubDevReportData
+   */
+   int8_t gGatewaySubDevReportData(communicationType_t commType, //通信类型，与添加时的保持一致
+                                   dataType_t dataType,          //数据类型
+                                   uint8_t * pDevAddr,           //设备通信地址，与添加时的保持一致
+                                   uint8_t * data,               //上报的数据指针
+                                   uint32_t len);                //数据长度
+   ```
+
+   【注意】
+
+   (1)`dataType`:数据类型，注意与添加子设备时用到的协议类型`protocolType`区别开来：
+
+   ```c
+   //数据类型定义
+   typedef enum
+   {
+   	DATAPOINT_TYPE   = 0x00, //数据点
+   	TRANSPARENT_TYPE = 0x01, //透传数据
+   }dataType_t;
+   ```
+
+   (2)上传的数据顺序应与数据点一一对应。本例中定义了四个数据点(switch、R、G、B)，分别对应四个字节的数据。
+
+   ```c
+   //上报设备状态
+   uint8_t lightAddr[8] = {0x83, 0x1f, 0x6f, 0x13, 0x00, 0x4b, 0x12, 0x00};
+   uint8_t reportData[4] = {0x01, 0xFF, 0xFF, 0xFF}; //设备状态数据:switch、R、G、B
+   uint32_t len = 4;
+   gGatewaySubDevReportData(RGB_LIGHT, DATAPOINT_TYPE, lightAddr, reportData, len);
+   ```
+
+   ​
+
+4. 子设备上下线状态通知 
+
+   ```c
+   /*
+   * gGatewaySubDevIsOnline
+   */
+   int8_t gGatewaySubDevIsOnline(communicationType_t commType,    //通信类型，与添加时的保持一致
+                                 uint8_t * pDevAddr,              //设备通信地址，与添加时的保持一致
+                                 uint8_t statue);                 //设备状态(0:离线 1:上线)
+   ```
+
+5. 机智云官方测试APP在点击进入对应的设备时会请求设备状态，收到请求应立即上报子设备状态。APP请求设备信息需要通过通信层的接口实现，因此需要先要添加通信函数并注册(需在程序入口处完成注册-->gizwitsInit 之后， 主
+   循环前 )：
+
+   ```c
+   /*
+   * 注册通信函数，官方例程
+   */
+   void ICACHE_FLASH_ATTR demoCI_CommInterfaceRegister(void)
+   {
+       comm_interface_t DemoCI_Interface; //定义通信接口
+       
+       DemoCI_Interface.setAddSubDevMode = (void *)demoCI_SetAddSubDevMode; 
+       DemoCI_Interface.subDevRegisterResult = NULL;
+       DemoCI_Interface.subDevDel = (void *)demoCI_SubDevDel;
+       DemoCI_Interface.issuedSubDev = (void *)demoCI_IssuedSubDev;
+       DemoCI_Interface.requestSubDevInfo = (void *)demoCI_RequestSubDevInfo;
+       DemoCI_Interface.scanSubDev = (void *)demoCI_SearchFind; 
+       DemoCI_Interface.clearNetInfo = (void *)demoCI_clearNetworkInfo;
+       
+       gGatewayRegister(demoCI, (comm_interface_t *)&DemoCI_Interface);
+   }
+   ```
+
+   这是一组需要在二次开发时定义并实现的私有函数，需要开发者注意实现，可参考SDK中的具体实现，此处不一一展示，仅以查询子设备状态函数为例，说明实现过程。
+
+   结构体`comm_interface_t`中定义了一组函数指针，用做通信接口函数：
+
+   ```C
+   /*
+   * Communication Interface
+   */
+   typedef struct
+   {
+       void (* setAddSubDevMode)(uint32_t timeOut,uint16_t deviceNum,uint8_t *data,uint16_t dataLen);                                   //开启中控设备添加模式
+       void (* subDevRegisterResult)(uint8_t *pDevAddr,uint8_t result);
+       void (* subDevDel)(uint8_t *pDevAddr);  //删除子设备
+       void (* issuedSubDev)(dataType_t dataType,uint8_t *pDevAddr,uint8_t *data,uint32_t dataLen);                                   //控制子设备
+       void (* requestSubDevInfo)(dataType_t dataType,uint8_t *pDevAddr,uint8_t mode,uint8_t *data,uint32_t dataLen);                    //查询子设备状态
+       void (* scanSubDev)(uint8_t *pDevAddr); //子设备在线状态检测
+       void (* clearNetInfo)(void);            // 清除网络信息
+   #ifdef MULTICAST_GROUP
+       int32_t (*groupCreate)(char *groupName);
+       int8_t (*groupDestroy)(uint32_t groupID);
+       int8_t (*groupAddMember)(uint32_t groupId , uint8_t *pDevAddr);
+       int8_t (*groupDelMember)(uint32_t groupId , uint8_t *pDevAddr);
+       int8_t (*groupControl)(uint32_t groupId,const char *pk,uint8_t *data,uint32_t dataLen);
+   #endif
+   } comm_interface_t;
+   ```
+
+   当APP请求设备信息时，SDK就会调用`demoCI_RequestSubDevInfo()`，那么就应该这个函数中上报当前的设备状态：
+
+   ```C
+   /*
+   * demoCI_SetAddSubDevMode
+   */
+   uint8_t ICACHE_FLASH_ATTR demoCI_SetAddSubDevMode(dataType_t dataType,  //数据点类型
+                                                     uint8_t *pDevAddr,    //设备通信地址
+                                                     uint8_t mode,         //模式(暂时未用到)
+                                                     uint8_t *data,        //数据指针(暂时未用到)
+                                                     uint32_t dataLen);    //数据长度(暂时未用到)
+   {
+       
+       GIZWITS_LOG("[CI] demoCI_SetAddSubDevMode \n"); 
+       //添加状态上报代码
+     	gGatewaySubDevReportData(RGB_LIGHT, DATAPOINT_TYPE, lightAddr, reportData, len);
+       return 0;
+   }
+   ```
+
+6. 控制子设备函数`demoCI_IssuedSubDev`用于下发控制数据，也是通信接口函数之一：
+
+   ```C
+   int8_t ICACHE_FLASH_ATTR ghDevice_IssuedSubDev(dataType_t dataType,  //数据类型
+                                                  uint8_t * pDevAddr,   //设备地址
+                                                  uint8_t * data,       //数据指针(控制数据)
+                                                  uint32_t dataLen)     //数据长度
+   {
+       GIZWITS_LOG("[CI] demoCI_RequestSubDevInfo \n"); 
+       //设备地址用于查找对应设备
+       //控制数据包含在数据指针所指向的数据中
+       return 0;
+   }
+   ```
+
+   【注意】以下为实验发现
+
+   下发数据中，第一个字节为位置掩码：
+
+   (1)假设数据点为S、R、G、B，则接收到的控制数据为:
+
+   | data[0] | data[1] | data[2] | data[4] | data[4] |
+   | :-----: | :-----: | :-----: | :-----: | :-----: |
+   |  mask   |    S    |    R    |    G    |    B    |
+   |  0x08   |  0x00   |  0x00   |  0x00   |  0x4f   |
+
+   其含义是：该控制数据为第4个数据点的数据，对应蓝色通道的亮度值为0x4f。
+
+   即data[0]代表控制数据位置，data[0] = 0x08代表data[4]对应的数据点有数据，其他数据点数据为0。
+
+   开灯数据为：01 01 00 00 00，以此类推。
+
+   (2)假设设备具有三个按键，对应数据点为SW_1、SW\_2、SW\_3 ，则每次收到的数据只有两个字节：
+
+   01 01(00): SW\_1 开(关)
+
+   02 02(00): SW\_4 开(关)
+
+   04 04(00): SW\_3 开(关)
+
+7. 最后
+
+   本文只记录了几个关键步骤以及容易忽视的地方，非完整描述，具体实现跟具体的设备种类(灯、开关等)以及底层一些自己定义的数据通信格式有关。
+
